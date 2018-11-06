@@ -3,17 +3,6 @@ require 'oystercard'
 describe Oystercard do
 	let (:station) { 'station' }
 
-	describe '#journeys' do
-		it 'has an empty list of journeys on initialization' do
-			expect(subject.journeys.length).to eq 0
-		end
-		it 'touching in and out creates one journey' do
-			subject.top_up(15)
-			subject.touch_in(station)
-			subject.touch_out(station)
-			expect(subject.journeys.length).to eq 1
-		end
-	end
 
 	describe "#balance" do
 		it "responds to :balance" do
@@ -47,6 +36,12 @@ describe Oystercard do
 		end
 	end
 
+	describe "#insufficient funds" do
+		it "checks that error is raised when insufficient funds on card" do
+			expect{ (subject.touch_in(station)) }.to raise_error "Insufficient funds for journey"
+		end
+	end
+
 	describe "#in-out" do
 		before (:each) do
 			subject.top_up(5)
@@ -59,32 +54,7 @@ describe Oystercard do
 			subject.touch_out(station)
 			expect(subject).to_not be_in_journey
 		end
-
-		it 'records the station at which you touch out' do
-			subject.touch_out(station)
-			expect(subject.journeys[0][:exit_station]).to eq station
-		end
-
 	end
 
-	describe "#insufficient funds" do
-		it "checks that error is raised when insufficient funds on card" do
-			expect{ (subject.touch_in(station)) }.to raise_error "Insufficient funds for journey"
-		end
-	end
 
-	describe "#entry_station" do
-		it "stores the station you touch in at" do
-			subject.top_up(5)
-			subject.touch_in(station)
-			expect(subject.current_journey[:entry_station]).to eq station
-		end
-
-		it "it deletes entry station when touched_out" do
-			subject.top_up(5)
-			subject.touch_in(station)
-			subject.touch_out(station)
-			expect(subject.current_journey.has_key?('entry_station')).to be false
-		end
-	end
 end
