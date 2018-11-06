@@ -3,6 +3,18 @@ require 'oystercard'
 describe Oystercard do
 	let (:station) { 'station' }
 
+	describe '#journeys' do
+		it 'has an empty list of journeys on initialization' do
+			expect(subject.journeys.length).to eq 0
+		end
+		it 'touching in and out creates one journey' do
+			subject.top_up(15)
+			subject.touch_in(station)
+			subject.touch_out(station)
+			expect(subject.journeys.length).to eq 1
+		end
+	end
+
 	describe "#balance" do
 		it "responds to :balance" do
 			expect(subject).to respond_to(:balance)
@@ -27,11 +39,11 @@ describe Oystercard do
 			subject.top_up(5)
 		end
 		it "deducts the correct fare from balance" do
-			subject.touch_out
+			subject.touch_out(station)
 			expect(subject.balance).to eq(4)
 		end
 		it "makes sure the journey has been paid for" do
-			expect{ subject.touch_out }.to change{ subject.balance }.by -Oystercard::MINIMUM_FARE
+			expect{ subject.touch_out(station) }.to change{ subject.balance }.by -Oystercard::MINIMUM_FARE
 		end
 	end
 
@@ -44,9 +56,15 @@ describe Oystercard do
 			expect(subject).to be_in_journey
 		end
 		it "checks if you are not in journey after touching out" do
-			subject.touch_out
+			subject.touch_out(station)
 			expect(subject).to_not be_in_journey
 		end
+
+		it 'records the station at which you touch out' do
+			subject.touch_out(station)
+			expect(subject.exit_station).to eq station
+		end
+
 	end
 
 	describe "#insufficient funds" do
@@ -64,7 +82,14 @@ describe Oystercard do
 		it "it deletes entry station when touched_out" do
 			subject.top_up(5)
 			subject.touch_in(station)
-			subject.touch_out
+			subject.touch_out(station)
 			expect(subject.entry_station).to be nil
 		end
+
+
+
+
+
+
+
 end
