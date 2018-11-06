@@ -1,3 +1,5 @@
+require_relative 'station'
+
 class Oystercard
   attr_reader :balance, :journeys, :current_journey
   MAXIMUM_BALANCE = 90

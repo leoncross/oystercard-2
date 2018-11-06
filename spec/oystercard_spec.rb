@@ -73,23 +73,18 @@ describe Oystercard do
 		end
 	end
 
-	describe "#entry_station"
+	describe "#entry_station" do
 		it "stores the station you touch in at" do
 			subject.top_up(5)
 			subject.touch_in(station)
 			expect(subject.current_journey[:entry_station]).to eq station
 		end
+
 		it "it deletes entry station when touched_out" do
 			subject.top_up(5)
 			subject.touch_in(station)
 			subject.touch_out(station)
 			expect(subject.current_journey.has_key?('entry_station')).to be false
 		end
-
-
-
-
-
-
-
+	end
 end
